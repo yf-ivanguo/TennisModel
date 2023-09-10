@@ -121,10 +121,12 @@ class Glicko():
 
             return player_glicko2_rating, player_glicko2_rd, player_glicko2_vol
         return self.RATING_INIT, self.RD_INIT, self.VOL_INIT
-
+    
     def compute_df_glicko(self, df, compute_all=True):
-        new_data_df = df[df['new_col'] == 1]
-        target_df = df if compute_all else new_data_df
+        if not compute_all:
+            target_df = df[df['new_col'] == 1]
+        else:
+            target_df = df
         
         for index, row in target_df.iterrows():
             p1_updated_rating, p1_updated_rd, p1_updated_vol = self.compute_glicko(df, row['p1_id'], index)
@@ -136,3 +138,5 @@ class Glicko():
             df.at[index, 'p2_glicko2_rating'] = p2_updated_rating
             df.at[index, 'p2_glicko2_rd'] = p2_updated_rd
             df.at[index, 'p2_glicko2_vol'] = p2_updated_vol
+        
+        return df
